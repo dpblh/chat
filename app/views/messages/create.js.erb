@@ -1,0 +1,4 @@
+<% publish_to '/messages/new' do %>
+    $("#ticker").append("<%= j render partial: 'message', object: @message %>");
+    $("#content").val("");
+<% end %>
