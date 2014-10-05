@@ -1,4 +1,4 @@
-<% publish_to '/messages/new' do %>
-    $("#ticker").append("<%= j render partial: 'message', object: @message %>");
+<% publish_to tracked_channel do %>
+    $("#ticker").append("<%= j render partial: 'messages/message', object: @message %>");
     $("#content").val("");
 <% end %>

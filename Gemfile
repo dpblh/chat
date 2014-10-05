@@ -41,3 +41,4 @@ gem 'spring',        group: :development
 
 gem 'private_pub'
 gem 'thin'
+gem 'uuid'

@@ -1,0 +1,29 @@
+<p id="notice"><%= notice %></p>
+
+<p>
+  <strong>Name:</strong>
+  <%= @channel.name %>
+  <%= private_channel_label(@channel) %>
+</p>
+
+<%= link_to 'Edit', edit_channel_path(@channel) %>
+
+<ul>
+    <% @channel.subscriber.each do |subscriber|%>
+        <li><span><%= subscriber.login  %></span><%= link_to 'Удалить подписцика', "/channels/#{@channel.id}/unsubscribe/#{subscriber.id}" %></li>
+    <% end %>
+</ul>
+
+<%= form_tag '/channels/'+@channel.id.to_s, method: :get do %>
+    <fieldset>
+      <div class="input-append">
+        <%= text_field_tag :login, '', class: :span6%>
+        <%= submit_tag 'Поиск', class: :btn %>
+      </div>
+    </fieldset>
+<% end %>
+<ul>
+  <% @users.each do |user|%>
+    <li><span><%= user.login  %></span><%= link_to 'Добавить на канал', "/channels/#{@channel.id}/subscribe/#{user.id}" %></li>
+  <% end %>
+</ul>

@@ -1,7 +1,19 @@
 Rails.application.routes.draw do
+  resources :channels
+  resources :users
+
   get 'messages/index'
   post 'messages/create'
   root 'messages#index'
+  get 'messages/show_login'
+  post 'messages/login'
+  get 'messages/logout'
+  get 'channels/:id/subscribe' => 'channels#self_subscribe'
+  get 'channels/:id/unsubscribe' => 'channels#self_unsubscribe'
+  get 'channels/:id/subscribe/:subscriber_id' => 'channels#subscribe', as: :unsubscribe #post
+  get 'channels/:id/unsubscribe/:subscriber_id' => 'channels#unsubscribe', as: :subscribe #post
+  get 'channels/:id/chat' => 'channels#chat'
+  post 'channels/:id/pushing' => 'channels#pushing'
   # The priority is based upon order of creation: first created -> highest priority.
   # See how all your routes lay out with "rake routes".
 

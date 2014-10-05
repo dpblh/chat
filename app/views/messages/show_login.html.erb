@@ -1,0 +1,8 @@
+<%= form_tag '/messages/login' do %>
+    <fieldset>
+      <div class="input-append">
+        <%= text_field_tag :login, '', class: :span6 %>
+        <%= submit_tag 'Войти', class: :btn %>
+      </div>
+    </fieldset>
+<% end %>
