@@ -1,53 +1,60 @@
 require 'uuid'
 
 class ChannelsController < ApplicationController
-  before_action :set_channel, only: [:show, :edit, :update, :destroy, :chat, :pushing, :subscribe, :unsubscribe, :self_subscribe, :self_unsubscribe]
-  before_action :set_current_user
-  before_action :only_owner, only: [:edit, :update, :destroy, :subscribe]
+  before_action :authenticate_user!
+
+  before_action :set_channel, except: [:new, :create]#: [:show, :edit, :update, :destroy, :chat, :pushing, :subscribe, :unsubscribe, :self_subscribe, :self_unsubscribe]
+  before_action :only_owner, only: [:edit, :update, :destroy, :subscribe, :unsubscribe]
   before_action :set_popular_channels, only: [:chat, :show, :new, :edit]
-  before_action :is_signed, only: :chat
+  before_action :is_signed, only: [:chat, :pushing]
 
   def chat
     render 'messages/index'
   end
 
+  # Формируем и рендерим сообщение
   def pushing
     @message = {
         content: params[:content],
         time: Time.now.to_s(:ru_datetime),
-        login: @current_user.login
+        login: current_user.username
     }
     render 'messages/create'
   end
 
   def show
-    @users = User.where(login: params[:login])
+    # Показываем найденых пользователей
+    @users = User.where(username: params[:username])
     @users = [] unless @users
   end
 
+  # Пользователь сам себя подписал
   def self_subscribe
     redirect_to root_path, notice: 'Подписать на приватный канал может только автор канала' and return if @channel.private_channel
-    redirect_to root_path, notice: 'Вы уже подписались на канал' and return if @channel.subscriber.include?(@current_user)
-    @channel.subscriber << @current_user
+    redirect_to root_path, notice: 'Вы уже подписались на канал' and return if @channel.subscriber.include?(current_user)
+    @channel.subscriber << current_user
     redirect_to root_path, notice: 'Вы успешно подписались на канал'
   end
 
+  # Пользовате отписался
   def self_unsubscribe
-    @channel.subscriber.delete(@current_user)
+    @channel.subscriber.delete(current_user)
     redirect_to root_path, notice: 'Вы отписались от канала'
   end
 
+  # Владелиц канала подписывает на канал
   def subscribe
     subscriber = User.find params[:subscriber_id]
-    redirect_to channel_path, notice: "Пользователь #{subscriber.login} уже подписан на канал" and return if @channel.subscriber.include?(subscriber)
+    redirect_to channel_path, notice: "Пользователь #{subscriber.username} уже подписан на канал" and return if @channel.subscriber.include?(subscriber)
     @channel.subscriber << subscriber
-    redirect_to channel_path, notice: "Пользователь #{subscriber.login} успешно подписан на канал"
+    redirect_to channel_path, notice: "Пользователь #{subscriber.username} успешно подписан на канал"
   end
 
+  # Владелец канала удаляет с канала
   def unsubscribe
     subscriber = User.find params[:subscriber_id]
     @channel.subscriber.delete(subscriber)
-    redirect_to channel_path, notice: "Пользователь #{subscriber.login} успешно удалён с канал"
+    redirect_to channel_path, notice: "Пользователь #{subscriber.username} успешно удалён с канал"
   end
 
   def new
@@ -59,7 +66,7 @@ class ChannelsController < ApplicationController
 
   def create
     @channel = Channel.new(channel_params)
-    @channel.author = @current_user
+    @channel.author = current_user
     @channel.uid= UUID.generate.to_s.gsub!('-', '')
 
     if @channel.save
@@ -79,7 +86,7 @@ class ChannelsController < ApplicationController
 
   def destroy
     @channel.destroy
-    redirect_to channels_url, notice: 'Канал успешно удален'
+    redirect_to root_url, notice: 'Канал успешно удален'
   end
 
   private
@@ -92,10 +99,10 @@ class ChannelsController < ApplicationController
     end
 
     def only_owner
-      redirect_to root_url, notice: 'Этот канал вам не принадлежит' unless @current_user.channels.include?(@channel)
+      redirect_to root_url, notice: 'Этот канал вам не принадлежит' unless current_user.channels.include?(@channel)
     end
 
     def is_signed
-      redirect_to root_path, notice: 'У вас нет доступа к каналу' unless @channel.author == @current_user or @channel.subscriber.include?(@current_user)
+      redirect_to root_path, notice: 'У вас нет доступа к каналу' unless @channel.author == current_user or @channel.subscriber.include?(current_user)
     end
 end

@@ -24,6 +24,6 @@ module ApplicationHelper
   end
 
   def show_link_subscribe(channel)
-    link_to 'Подписаться', "/channels/#{channel.id}/subscribe" unless channel.author == @current_user or channel.subscriber.include?(@current_user)
+    link_to 'Подписаться', "/channels/#{channel.id}/subscribe" unless channel.author == current_user or channel.subscriber.include?(current_user)
   end
 end

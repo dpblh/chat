@@ -1,8 +1,3 @@
-<%= form_tag '/messages/login' do %>
-    <fieldset>
-      <div class="input-append">
-        <%= text_field_tag :login, '', class: :span6 %>
-        <%= submit_tag 'Войти', class: :btn %>
-      </div>
-    </fieldset>
-<% end %>
+<%= link_to 'Sign in with Facebook', user_omniauth_authorize_path(:facebook) %>
+<%= link_to 'Sign in with Vkontakte', user_omniauth_authorize_path(:vkontakte) %>
+<%= link_to 'Sign in with Google', user_omniauth_authorize_path(:google_oauth2) %>
