@@ -1,0 +1,16 @@
+development: &defaults
+  :vkontakte:
+    :app_id:
+    :app_secret:
+  :facebook:
+    :app_id:
+    :app_secret:
+  :google:
+    :app_id:
+    :app_secret:
+
+test:
+  <<: *defaults
+
+production:
+  <<: *defaults
