@@ -1,25 +1,12 @@
 Rails.application.routes.draw do
-  # namespace :users do
-  # get 'omniauth_callbacks/facebook'
-  # end
-  #
-  # namespace :users do
-  # get 'omniauth_callbacks/vkontakte'
-  # end
 
   devise_for :users, :controllers => { :omniauth_callbacks => 'users/omniauth_callbacks'}
-  # devise_scope :user do
-  #   get '/login' => 'devise/sessions#new'
-  # end
   resources :channels
   resources :users, :only => [:index, :destroy]
 
   get 'messages/index'
   post 'messages/create'
   root 'messages#index'
-  get 'messages/show_login'
-  # post 'messages/login'
-  # get 'messages/logout'
   get 'channels/:id/subscribe' => 'channels#self_subscribe'
   get 'channels/:id/unsubscribe' => 'channels#self_unsubscribe'
   get 'channels/:id/subscribe/:subscriber_id' => 'channels#subscribe', as: :unsubscribe #post
