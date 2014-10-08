@@ -26,4 +26,8 @@ module ApplicationHelper
   def show_link_subscribe(channel)
     link_to 'Подписаться', "/channels/#{channel.id}/subscribe" unless channel.author == current_user or channel.subscriber.include?(current_user)
   end
+
+  def providers
+    [['',''], %w(facebook facebook), %w(vkontakte vkontakte), %w(google_oauth2 google_oauth2)]
+  end
 end

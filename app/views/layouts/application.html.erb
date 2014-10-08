@@ -47,6 +47,7 @@
     <div class="span4">
         <% if current_user %>
           <%= link_to 'Создать канал', {controller: :channels, action: :new}, {class: :btn} %>
+          <%= link_to 'Найти канал', {controller: :channels, action: :search}, {class: :btn} %>
         <% end %>
     </div>
     <div class="span8">

@@ -3,9 +3,9 @@ require 'uuid'
 class ChannelsController < ApplicationController
   before_action :authenticate_user!
 
-  before_action :set_channel, except: [:new, :create]#: [:show, :edit, :update, :destroy, :chat, :pushing, :subscribe, :unsubscribe, :self_subscribe, :self_unsubscribe]
+  before_action :set_channel, except: [:new, :create, :search]#: [:show, :edit, :update, :destroy, :chat, :pushing, :subscribe, :unsubscribe, :self_subscribe, :self_unsubscribe]
   before_action :only_owner, only: [:edit, :update, :destroy, :subscribe, :unsubscribe]
-  before_action :set_popular_channels, only: [:chat, :show, :new, :edit]
+  before_action :set_popular_channels, only: [:chat, :show, :new, :edit, :search]
   before_action :is_signed, only: [:chat, :pushing]
 
   def chat
@@ -24,7 +24,7 @@ class ChannelsController < ApplicationController
 
   def show
     # Показываем найденых пользователей
-    @users = User.where(username: params[:username])
+    @users = User.where(search_params.collect { |key, value| "upper(#{key}) like upper(?)" }.join(' and '), *search_params.collect{|key, value| "#{value}%"}).all
     @users = [] unless @users
   end
 
@@ -55,6 +55,11 @@ class ChannelsController < ApplicationController
     subscriber = User.find params[:subscriber_id]
     @channel.subscriber.delete(subscriber)
     redirect_to channel_path, notice: "Пользователь #{subscriber.username} успешно удалён с канал"
+  end
+
+  def search
+    @channels = Channel.where(name: params[:channel_name], private_channel: false).all
+    @channels = [] unless @channels
   end
 
   def new
@@ -96,6 +101,12 @@ class ChannelsController < ApplicationController
 
     def channel_params
       params.require(:channel).permit(:name, :uid, :private_channel)
+    end
+
+    def search_params
+      temp = params.permit(:nickname, :first_name, :last_name, :provider)
+      temp.select!{|key, value| !value.blank?}
+      temp
     end
 
     def only_owner

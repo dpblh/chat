@@ -1,6 +1,7 @@
 Rails.application.routes.draw do
 
   devise_for :users, :controllers => { :omniauth_callbacks => 'users/omniauth_callbacks'}
+  get 'channels/search' => 'channels#search', as: :channel_search
   resources :channels
   resources :users, :only => [:index, :destroy]
 
