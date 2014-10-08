@@ -6,10 +6,6 @@ class MessagesController < ApplicationController
   end
 
   def create
-    @message = {
-      content: params[:content],
-      time: Time.now.to_s(:ru_datetime),
-      login: current_user.username
-    }
+    send_message params[:content]
   end
 end

@@ -14,11 +14,7 @@ class ChannelsController < ApplicationController
 
   # Формируем и рендерим сообщение
   def pushing
-    @message = {
-        content: params[:content],
-        time: Time.now.to_s(:ru_datetime),
-        login: current_user.username
-    }
+    send_message params[:content]
     render 'messages/create'
   end
 
