@@ -7,5 +7,9 @@ class MessagesController < ApplicationController
 
   def create
     send_message params[:content]
+    respond_to do |format|
+      format.js
+      format.json { render json: @message}
+    end
   end
 end

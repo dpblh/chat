@@ -15,7 +15,12 @@ class ChannelsController < ApplicationController
   # Формируем и рендерим сообщение
   def pushing
     send_message params[:content]
-    render 'messages/create'
+    respond_to do |format|
+      format.js {
+        render 'messages/create'
+      }
+      format.json { render json: @message}
+    end
   end
 
   def show
@@ -26,36 +31,74 @@ class ChannelsController < ApplicationController
 
   # Пользователь сам себя подписал
   def self_subscribe
-    redirect_to root_path, notice: 'Подписать на приватный канал может только автор канала' and return if @channel.private_channel
-    redirect_to root_path, notice: 'Вы уже подписались на канал' and return if @channel.subscriber.include?(current_user)
-    @channel.subscriber << current_user
-    redirect_to root_path, notice: 'Вы успешно подписались на канал'
+    respond_to do |format|
+      format.html {
+        redirect_to root_path, notice: 'Подписать на приватный канал может только автор канала' and return if @channel.private_channel
+        redirect_to root_path, notice: 'Вы уже подписались на канал' and return if @channel.subscriber.include?(current_user)
+        @channel.subscriber << current_user
+        redirect_to root_path, notice: 'Вы успешно подписались на канал'
+      }
+      format.json {
+        head :precondition_failed and return if @channel.private_channel && @channel.subscriber.include?(current_user)
+        @channel.subscriber << current_user
+        head :ok
+      }
+    end
   end
 
   # Пользовате отписался
   def self_unsubscribe
     @channel.subscriber.delete(current_user)
-    redirect_to root_path, notice: 'Вы отписались от канала'
+
+    respond_to do |format|
+      format.html {
+        redirect_to root_path, notice: 'Вы отписались от канала'
+      }
+      format.json { head :ok}
+    end
   end
 
   # Владелиц канала подписывает на канал
   def subscribe
     subscriber = User.find params[:subscriber_id]
-    redirect_to channel_path, notice: "Пользователь #{subscriber.username} уже подписан на канал" and return if @channel.subscriber.include?(subscriber)
-    @channel.subscriber << subscriber
-    redirect_to channel_path, notice: "Пользователь #{subscriber.username} успешно подписан на канал"
+
+    respond_to do |format|
+      format.html {
+        redirect_to channel_path, notice: "Пользователь #{subscriber.username} уже подписан на канал" and return if @channel.subscriber.include?(subscriber)
+        @channel.subscriber << subscriber
+        redirect_to channel_path, notice: "Пользователь #{subscriber.username} успешно подписан на канал"
+      }
+      format.json {
+        head :precondition_failed and return if @channel.subscriber.include?(subscriber)
+        @channel.subscriber << subscriber
+        head :ok
+      }
+    end
   end
 
   # Владелец канала удаляет с канала
   def unsubscribe
     subscriber = User.find params[:subscriber_id]
     @channel.subscriber.delete(subscriber)
-    redirect_to channel_path, notice: "Пользователь #{subscriber.username} успешно удалён с канал"
+
+    respond_to do |format|
+      format.html {
+        redirect_to channel_path, notice: "Пользователь #{subscriber.username} успешно удалён с канал"
+      }
+      format.json {
+        head :ok
+      }
+    end
   end
 
   def search
     @channels = Channel.where(name: params[:channel_name], private_channel: false).all
     @channels = [] unless @channels
+
+    respond_to do |format|
+      format.html
+      format.json { render json: @channels }
+    end
   end
 
   def new
@@ -70,24 +113,37 @@ class ChannelsController < ApplicationController
     @channel.author = current_user
     @channel.uid= UUID.generate.to_s.gsub!('-', '')
 
-    if @channel.save
-      redirect_to @channel, notice: 'Канал успешно сохранен'
-    else
-      render :new
+    respond_to do |format|
+      if @channel.save
+        format.html { redirect_to @channel, notice: 'Канал успешно сохранен'}
+        format.json { render json: @channel, status: :created }
+      else
+        format.html { render :new }
+        format.json { head :unprocessable_entity }
+      end
     end
   end
 
   def update
-    if @channel.update(channel_params)
-      redirect_to @channel, notice: 'Канал успешно обнавлен'
-    else
-      render :edit
+    respond_to do |format|
+      if @channel.update(channel_params)
+        format.html { redirect_to @channel, notice: 'Канал успешно обнавлен' }
+        format.json { render json: @channel, status: :ok }
+      else
+        format.html { render :edit }
+        format.json { head :unprocessable_entity }
+      end
     end
   end
 
   def destroy
     @channel.destroy
-    redirect_to root_url, notice: 'Канал успешно удален'
+
+    respond_to do |format|
+      format.html { redirect_to root_url, notice: 'Канал успешно удален' }
+      format.json { head :no_content }
+    end
+
   end
 
   private
