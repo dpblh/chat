@@ -27,7 +27,7 @@ class ApplicationController < ActionController::Base
 
   def write_channel_log uid, message
     # ни фига не так надо.
-    File.open(Rails.root.join('log/channels', uid), 'a') {|f| f.puts message.to_json}
+    File.open(Rails.root.join('log/channels', uid+'.log'), 'a') {|f| f.puts message.to_json}
   end
 
 end

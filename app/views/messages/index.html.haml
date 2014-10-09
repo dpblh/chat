@@ -1,0 +1,22 @@
+%h1
+  - if @channel
+    =@channel.name
+  - else
+    Основной чат
+
+.row
+  .chat.col-lg-7
+    #ticker
+.row
+  =form_tag tracked_pushing, remote: true, id: :form do
+    %fieldset
+      .input-append
+        =text_field_tag :content, '', class: :send_message
+        =submit_tag 'Отправить', class: :btn
+
+  - if @channel and @channel.author == current_user
+    = link_to 'Настройка канала', @channel
+  - if @channel and @channel.subscriber.include?(current_user)
+    = link_to 'Отписаться', "/channels/#{@channel.id}/unsubscribe"
+
+=subscribe_to tracked_channel

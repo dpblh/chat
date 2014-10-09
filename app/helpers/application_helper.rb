@@ -15,19 +15,4 @@ module ApplicationHelper
     end
   end
 
-  def private_channel_label(channel)
-    if channel.private_channel
-      'Приватный канал'
-    else
-      'Публичный канал'
-    end
-  end
-
-  def show_link_subscribe(channel)
-    link_to 'Подписаться', "/channels/#{channel.id}/subscribe" unless channel.author == current_user or channel.subscriber.include?(current_user)
-  end
-
-  def providers
-    [['',''], %w(facebook facebook), %w(vkontakte vkontakte), %w(google_oauth2 google_oauth2)]
-  end
 end

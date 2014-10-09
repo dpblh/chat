@@ -1,0 +1,16 @@
+= form_for(@channel, html: {class: 'form-horizontal'}) do |f|
+  - if @channel.errors.any?
+    #error_explanation
+      %ul
+        - @channel.errors.full_messages.each do |message|
+          %li= message
+  .form-group
+    = f.label 'Название канала', class: 'col-sm-2 control-label'
+    .col-sm-4
+      = f.text_field :name, class: 'form-control', placeholder: 'Название канала'
+  .form-group
+    = f.label 'Приватный', class: 'col-sm-2 control-label'
+    .col-sm-4
+      = f.check_box :private_channel
+  .col-sm-offset-2.col-sm-4
+    = f.submit 'Создать канал', class: 'btn btn-default'

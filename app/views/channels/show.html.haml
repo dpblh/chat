@@ -1,0 +1,37 @@
+%h1= private_channel_label(@channel)
+
+= link_to 'Редактировать канал', edit_channel_path(@channel)
+= link_to 'Удалить канал', channel_path(@channel), method: :delete
+
+%ul
+  - @channel.subscriber.each do |subscriber|
+    %li
+      %span= subscriber.username
+      = link_to 'Удалить подписцика', "/channels/#{@channel.id}/unsubscribe/#{subscriber.id}"
+
+%h3 Поиск подпищика
+= form_tag '/channels/'+@channel.id.to_s, method: :get, class: 'form-horizontal' do
+  .form-group
+    %label.col-sm-2.control-label(for="nickname") nickname
+    .col-sm-4
+      = text_field_tag :nickname, params[:nickname], class: 'form-control', placeholder: :nickname
+  .form-group
+    %label.col-sm-2.control-label(for="first_name") Имя
+    .col-sm-4
+      = text_field_tag :first_name, params[:first_name], class: 'form-control', placeholder: 'Имя'
+  .form-group
+    %label.col-sm-2.control-label(for="last_name") Фамилия
+    .col-sm-4
+      = text_field_tag :last_name, params[:last_name], class: 'form-control', placeholder: 'Фамилия'
+  .form-group
+    %label.col-sm-2.control-label(for="provide") Тип соц. сети
+    .col-sm-4
+      = select_tag :provider, options_for_select(providers), class: 'form-control'
+  .form-group
+    .col-sm-offset-2.col-sm-4
+      = submit_tag 'Поиск', class: 'btn btn-default'
+%ul
+  - @users.each do |user|
+    %li
+      %span= user.username
+      = link_to 'Добавить на канал', "/channels/#{@channel.id}/subscribe/#{user.id}"

@@ -29,3 +29,7 @@
 #ticker > li {
     list-style: none;
 }
+
+.send_message {
+    width: 70%;
+}

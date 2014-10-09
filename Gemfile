@@ -50,3 +50,6 @@ gem 'omniauth-vkontakte'
 gem 'omniauth-google-oauth2'
 
 gem 'protected_attributes'
+
+gem 'haml-rails'
+gem 'twitter-bootstrap-rails'

@@ -1,0 +1,13 @@
+= form_tag channel_search_path, method: :get, class: 'form-horizontal' do
+  .control-group
+    %label.control-label(for="channel_name") Название канала
+    .controls
+      = text_field_tag :channel_name, params[:channel_name]
+  .control-group
+    .controls
+      = submit_tag 'Поиск', class: :btn
+%ul
+  - @channels.each do |channel|
+    %li
+      %span= channel.name
+      = link_to 'Подписаться на канал', "/channels/#{channel.id}/subscribe"

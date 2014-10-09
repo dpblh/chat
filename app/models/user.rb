@@ -18,7 +18,7 @@ class User < ActiveRecord::Base
           :provider => access_token.provider,
           :url => access_token.info.urls.Facebook,
           :username => access_token.extra.raw_info.name,
-          :nickname => access_token.extra.raw_info.username,
+          :nickname => access_token.extra.raw_info.name,
           :email => access_token.extra.raw_info.email,
           :first_name => access_token.extra.raw_info.first_name,
           :last_name => access_token.extra.raw_info.last_name,
