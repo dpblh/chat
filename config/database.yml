@@ -22,4 +22,10 @@ test:
 
 production:
   <<: *default
-  database: db/production.sqlite3
+  adapter: postgresql
+  encoding: utf8
+  reconnect: false
+  database: chat
+  username: tim
+  password: timcykahax
+  host: localhost
