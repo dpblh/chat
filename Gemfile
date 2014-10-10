@@ -40,7 +40,7 @@ gem 'capistrano-rails', group: :development
 
 
 gem 'private_pub'
-gem 'thin'
+ gem 'thin'
 gem 'uuid'
 
 gem 'devise'
